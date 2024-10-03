@@ -9,3 +9,5 @@ router.post('/login', loginController.login );
 
 
 module.exports = router;
+
+// this all routes can include in one file

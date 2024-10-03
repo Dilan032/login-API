@@ -15,3 +15,5 @@ router.get('/login', (req, res) => {
 });
 
 module.exports = router;
+
+// this all routes can include in one file
