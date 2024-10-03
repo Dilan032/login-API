@@ -1,14 +1,31 @@
 const express = require("express");
 const mysql = require("mysql");
+const dotenv = require("dotenv");
+const path = require("path")
+
+dotenv.config({path: './.env'}); 
 
 const app = express();
 
+// Set the view engine
+app.set('view engine', 'hbs');
+
+
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
     password: '',
-    database: 'nodejs-login'
+    database: process.env.DATABASE
 });
+
+
+const publicDirectory = path.join(__dirname, './public');
+app.use(express.static(publicDirectory));
+
+// parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: false}));
+// parse JOSON bodies (as sent by API clients)
+app.use(express.json());
 
 //check database conected or not
 db.connect((error) => {
@@ -23,6 +40,6 @@ app.listen(3000,()=>{
     console.log("Sever Start on Port 3000");
 });
 
-app.get("/", (req, res) =>{
-    res.send("<h1>Home Page</h1>")
-});
+//define routes
+app.use('/', require('./routes/pages'));
+app.use('/auth', require('./routes/auth'));
