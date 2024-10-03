@@ -1,13 +1,6 @@
-const mysql = require("mysql");
-const jsonwebtoken = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
+const db = require('../../connection');
 
-const db = mysql.createConnection({
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: '',
-    database: process.env.DATABASE
-});
 
 exports.register = (req, res) => {
     console.log(req.body);
@@ -20,33 +13,37 @@ exports.register = (req, res) => {
 
     db.query('SELECT email FROM users WHERE email = ?', [email], async (error, results)=>{
         if(error){
-            console.log(error);   
+            console.log(error);
+            return res.status(500).render('register', {
+                message: 'Server error, please try again later' 
+            });   
         }
         if(results.length > 0 ){
             return res.render('register',{
                 message:'the email is already in use'
-            })
+            });
         }
 
         // hashed Password
         let hashedPassword = await bcryptjs.hash(password, 8);
-        console.log(hashedPassword);
+        // console.log(hashedPassword);
 
         //insert data into database
         db.query('INSERT INTO users SET ?', {name:name, email:email, password:hashedPassword}, (error, results) =>{
             if(error){
                 console.log(error);
+                return res.status(500).render('register', {
+                    message: 'Server error, please try again later' 
+                }); 
 
             }else{
                 console.log(results);
-                return res.render('register',{
+                return res.render('login',{
                     message: 'User Registered'
                 });
             }
         })
         
     });
-
-    // res.send("Form submitted");
     
 }

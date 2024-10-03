@@ -1,22 +1,37 @@
 const express = require("express");
-const mysql = require("mysql");
+// const mysql = require("mysql");
 const dotenv = require("dotenv");
-const path = require("path")
+const path = require("path");
+const bodyParser = require("body-parser");
+const db = require('./connection');
 
-dotenv.config({path: './.env'}); 
+
 
 const app = express();
 
 // Set the view engine
 app.set('view engine', 'hbs');
 
+// Parse application/json
+app.use(bodyParser.json()); 
 
-const db = mysql.createConnection({
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: '',
-    database: process.env.DATABASE
-});
+// dotenv.config({path: './.env'}); 
+
+// const db = mysql.createConnection({
+//     host: process.env.DATABASE_HOST,
+//     user: process.env.DATABASE_USER,
+//     password: '',
+//     database: process.env.DATABASE
+// });
+
+//check database conected or not
+// db.connect((error) => {
+//     if(error){
+//         console.log(error);
+//     }else{
+//         console.log("mysql connected");
+//     }
+// })
 
 
 const publicDirectory = path.join(__dirname, './public');
@@ -27,14 +42,7 @@ app.use(express.urlencoded({ extended: false}));
 // parse JOSON bodies (as sent by API clients)
 app.use(express.json());
 
-//check database conected or not
-db.connect((error) => {
-    if(error){
-        console.log(error);
-    }else{
-        console.log("mysql connected");
-    }
-})
+
 
 app.listen(3000,()=>{
     console.log("Sever Start on Port 3000");
